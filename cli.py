@@ -6,6 +6,15 @@ import pymysql
 import pymysql.cursors
 import subprocess as sp
 
+def printrecords(records):
+    """
+    Take a list of matched records from a query, each of which is a dictionary,
+    and print them out nicely.
+    """
+    for record in records:
+        for key in record:
+            print(key + ": " + str(record[key]))
+
 def inputvalues(params_types: dict):
     """
     Take a dict with key-val pairs of (parameter, type)
