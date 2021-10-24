@@ -56,7 +56,20 @@ def insertStadium():
         'Capacity': 'int'
     }
 
-    insertintotable(params, 'Stadium')
+    insertintotable(params, 'stadium')
+
+def getPlayer():
+    id = input('Please enter Player ID: ')
+    query = f"SELECT * FROM player WHERE ID = {id}"
+
+    ret = cur.execute(query)
+    if ret:
+        printrecords(cur.fetchall())
+    else:
+        print("No player found with that ID.")
+
+def quit():
+    exit
 
 # Global - Main loop
 while(1):
@@ -92,16 +105,22 @@ while(1):
                 # Here taking example of Employee Mini-world
                 # TODO: Print set of choices
 
-                choices = [ 'insertStadium' ]
+                choices = [
+                    'quit',
+                    'insertStadium',
+                    'getPlayer'
+                ]
 
                 for id, choice in enumerate(choices):
-                    print(id, choice)
+                    print(str(id) + ") " + choice)
 
                 ch = int(input("Enter choice> "))
                 # tmp = sp.call('clear', shell=True)
 
-                eval(choices[ch])()
-                tmp = input("Enter any key to CONTINUE>")
+                try:
+                    eval(choices[ch])()
+                except IndexError:
+                    print("Invalid choice! Please enter the number corresponding to one of the given choices.")
 
     except Exception as e:
         # tmp = sp.call('clear', shell=True)
