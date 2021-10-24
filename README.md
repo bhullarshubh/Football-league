@@ -1,3 +1,43 @@
+## Functional Requirements
+
+- [ ] Insert
+    - [ ] insertStadium
+    - [ ] insertTeam
+    - [ ] insertPlayer
+    - [ ] insertManager
+    - [ ] insertMatch
+    - [ ] insertGoal
+    - [ ] insertResult
+
+- [ ] Delete
+    - [ ] removePlayer
+    - [ ] removeTeam
+    - [ ] removeManager
+    - [ ] removeMatch
+
+- [ ] Update
+    - [ ] Player
+        - [ ] updateJerseyName
+        - [ ] updateJerseyNumber
+        - [ ] updatePosition
+    - [ ] Stadium
+        - [ ] updateCapacity
+    - [ ] Match
+        - [ ] updateStadiumID: 
+        - [ ] updateDate
+    - [ ] Rank
+        - [ ] updateRank
+
+- [ ] Retrievals
+    - [ ] getPlayer
+    - [ ] getGoalscorers
+    - [ ] getRanklist
+    - [ ] getAvgGoalsScored
+    - [ ] getPlayingEleven
+    - [ ] getAboveAvgPlayers
+    - [ ] searchPlayer
+    - [ ] searchTeam
+
 ## Installation Instructions
 
 ### MySQL
