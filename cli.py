@@ -37,14 +37,15 @@ def insertintotable(params: dict, vals, table):
     types = list(params.values())
 
     for id, type in enumerate(types):
+        
+        if type == 'HH:MM:SS':
+            vals[id] = "'" + vals[id] + "'"
+
         if (type == 'string' or type == 'YYYY-MM-DD') and vals[id] is not pymysql.NULL:
             vals[id] = "'" + quote(vals[id]) + "'"
 
     try:
         query = f"INSERT INTO {table} ({', '.join(fields)}) VALUES ({', ' .join(vals)});"
-
-        # TODO: Remove debug print()
-        print("CONSTRUCTED QUERY: " + query)
 
         cur.execute(query)
         con.commit()
@@ -78,7 +79,7 @@ def insertTeam():
         cur.execute(f"SELECT ID FROM player WHERE TeamID IS NULL;")
         players = cur.fetchall()
 
-        if len(players) < 11:
+        if len(players) < 5:
             print("Not enough players to make a new team")
             return
 
@@ -87,12 +88,20 @@ def insertTeam():
         teamid = cur.lastrowid # get teamid of the just inserted team
         
         # Assign eleven players to this team
-        for i in range(11):
+        for i in range(5):
             cur.execute(f"UPDATE player SET TeamID = {teamid}, PlayingEleven = 1 WHERE ID = {players[i]['ID']}")
         
+        # insert jerseycolor for this team
+        print("Enter Jersey Color for this team (separated by spaces)")
+        colors = input().split(" ")
+
+        for color in colors:
+            cur.execute(f"insert into jerseycolor values ({teamid}, '{color}');")
+
         con.commit()
 
     except Exception as e:
+        con.rollback()
         print(f"Error: {e}")
         return
 
@@ -166,6 +175,30 @@ def removeManager():
         print(f"Error: {e}")
         return
 
+def insertResult():
+    params = {
+        'MatchID': 'int',
+        'HomeScore': 'int',
+        'AwayScore': 'int',
+    }
+
+    getinput = inputvalues(params)
+
+    try:
+        query = f"SELECT * FROM `result` WHERE MatchID = {getinput['MatchID']};"
+        cur.execute(query)
+
+        if len(cur.fetchall()) > 0:
+            print("Result for this Match already exists")
+            return
+        
+        # insert into result
+        insertintotable(params, list(getinput.values()), 'result')
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
 def getPlayer():
     id = input('Please enter Player ID: ')
     try:
@@ -230,6 +263,111 @@ def getPlayingEleven():
 def quit():
     exit()
 
+def insertMatch():
+    params = {
+        'HomeTeamID': 'int',
+        'AwayTeamID': 'int',
+        'Date': 'YYYY-MM-DD',
+        'Time': 'HH:MM:SS',
+        'Venue': 'int',
+    }
+
+    getinput = inputvalues(params)
+
+    try:
+        query = f"SELECT * FROM `match` WHERE HomeTeamID = {getinput['HomeTeamID']} AND AwayTeamID = {getinput['AwayTeamID']};"
+        cur.execute(query)
+
+        if len(cur.fetchall()) > 0:
+            print("Match already exists")
+            return
+        
+        # insert into match
+        getinput['Time'] = getinput['Date'] + " " + getinput['Time']
+        insertintotable(params, list(getinput.values()), '`match`')
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
+def removeMatch():
+    id = input('Please enter Match ID: ')
+
+    try:
+        ret = cur.execute(f"DELETE FROM `match` WHERE ID = {id}")
+        con.commit()
+        
+        if ret:
+            print("Match removed successfully")
+        else:
+            print("No Match found with that ID")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
+def updateJerseyName() :
+    try :
+        Pid = input('Please enter Player ID of player whose jersey name needs to be updated: ')
+        jersey_name = input('Please enter jersey name of specified player: ')
+        query = f"UPDATE player SET JerseyName='{jersey_name}' WHERE ID={Pid};"
+        ret = cur.execute(query)
+        con.commit()
+        if ret:
+            print("Jersey Name updated successfully")
+        else:
+            print("No Player found with that ID")
+
+    except Exception as e:
+        con.rollback()
+        print(f"Error: {e}")
+
+def updateJerseyNumber() :
+    try :
+        Pid = input('Please enter Player ID of player whose jersey number needs to be updated: ')
+        jersey_number = input('Please enter jersey number of specified player: ')
+        query = f"UPDATE player SET JerseyNumber={jersey_number} WHERE ID={Pid};"
+        ret = cur.execute(query)
+        con.commit()
+        if ret:
+            print("Jersey Number updated successfully")
+        else:
+            print("No Player found with that ID")
+
+    except Exception as e:
+        con.rollback()
+        print(f"Error: {e}")
+
+def updateCapacity() :
+    try :
+        Sid = input("Please enter stadium ID whose capacity you want to change: ")
+        capacity = input('New value of capacity of stadium: ')
+        query = f"UPDATE stadium SET Capacity={capacity} WHERE ID={Sid};"
+        ret = cur.execute(query)
+        con.commit()
+        if ret:
+            print("Updated successfully")
+        else:
+            print("No stadium with this id found")
+    except Exception as e:
+        con.rollback()
+        print(f"Error : {e}")
+
+def updateStadiumID():
+    try :
+        Sid = input("Please enter stadium ID which you want to change: ")
+        newSid = input('New stadium ID: ')
+        query = f"UPDATE stadium SET ID={newSid} WHERE ID={Sid};"
+        ret = cur.execute(query)
+        con.commit()
+        if ret:
+            print("Updated successfully")
+        else:
+            print("No stadium with this id found")
+    except Exception as e:
+        con.rollback()
+        print(f"Error : {e}")
+
 # Global - Main loop
 while(1):
     # tmp = sp.call('clear', shell=True)
@@ -262,8 +400,6 @@ while(1):
                 # tmp = sp.call('clear', shell=True)
 
                 # Here taking example of Employee Mini-world
-                # TODO: Print set of choices
-
                 choices = [
                     'quit',
                     'insertStadium',
@@ -275,7 +411,13 @@ while(1):
                     'getGoalscorers',
                     'getAvgGoalsScored',
                     'getPlayingEleven',
-                    
+                    'insertMatch',
+                    'removeMatch',
+                    'insertResult',
+                    'updateStadiumID',
+                    'updateJerseyName',
+                    'updateJerseyNumber',
+                    'updateCapacity',
                 ]
 
                 for id, choice in enumerate(choices):
