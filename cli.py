@@ -37,7 +37,7 @@ def insertintotable(params: dict, vals, table):
     types = list(params.values())
 
     for id, type in enumerate(types):
-        if type == 'string' and vals[id] is not pymysql.NULL:
+        if (type == 'string' or type == 'YYYY-MM-DD') and vals[id] is not pymysql.NULL:
             vals[id] = "'" + quote(vals[id]) + "'"
 
     try:
@@ -124,6 +124,48 @@ def insertStadium():
 
     insertintotable(params, list(inputvalues(params).values()), 'stadium')
 
+def insertManager():
+    params = {
+        'FirstName': 'string',
+        'MiddleName': 'string',
+        'LastName': 'string',
+        'DOB': 'YYYY-MM-DD',
+        'Nationality': 'string'
+    }
+
+    insertintotable(params, list(inputvalues(params).values()), 'manager')
+
+def removeManager():
+    
+    id = input('Please enter Manager ID: ')
+    try:
+        ret = cur.execute(f"DELETE FROM Manager WHERE ID = {id}")
+        con.commit()
+        
+        if ret:
+            print("Manager removed successfully")
+        else:
+            print("No Manager found with that ID")
+
+    except pymysql.Error as e:
+        # manager mapped to some team
+        # remove this manager only if we can allot another manager to the team
+        cur.execute(f"SELECT ID FROM Manager WHERE ID NOT IN (SELECT managerid FROM team);")
+        managers = cur.fetchall()
+        if len(managers) == 0:
+            print("Manager mapped to a team; No free managers exist")
+        else:
+            try:
+                cur.execute(f"UPDATE Team SET Managerid ={managers[0]['ID']} WHERE managerid = {id}")
+                cur.execute(f"DELETE FROM Manager WHERE ID = {id}")
+                con.commit()
+                print("Manager removed successfully")
+            except Exception as e:
+                print(f"Error: {e}")
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
 def getPlayer():
     id = input('Please enter Player ID: ')
     try:
@@ -181,7 +223,9 @@ while(1):
                     'insertStadium',
                     'getPlayer',
                     'insertTeam',
-                    'removeTeam'
+                    'removeTeam',
+                    'insertManager', 
+                    'removeManager',  
                 ]
 
                 for id, choice in enumerate(choices):
