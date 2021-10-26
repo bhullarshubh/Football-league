@@ -116,7 +116,7 @@ CREATE TABLE `match` (
   KEY `Venue` (`Venue`),
   CONSTRAINT `match_ibfk_1` FOREIGN KEY (`HomeTeamID`) REFERENCES `team` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `match_ibfk_2` FOREIGN KEY (`AwayTeamID`) REFERENCES `team` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `match_ibfk_3` FOREIGN KEY (`Venue`) REFERENCES `stadium` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `match_ibfk_3` FOREIGN KEY (`Venue`) REFERENCES `stadium` (`ID`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -148,7 +148,6 @@ CREATE TABLE `player` (
   `JerseyName` varchar(255) NOT NULL,
   `JerseyNumber` int NOT NULL,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `JerseyNumber` (`JerseyNumber`),
   KEY `TeamID` (`TeamID`),
   CONSTRAINT `player_ibfk_1` FOREIGN KEY (`TeamID`) REFERENCES `team` (`ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb3;
@@ -259,8 +258,8 @@ CREATE TABLE `team` (
   PRIMARY KEY (`ID`),
   KEY `StadiumID` (`StadiumID`),
   KEY `ManagerID` (`ManagerID`),
-  CONSTRAINT `team_ibfk_1` FOREIGN KEY (`StadiumID`) REFERENCES `stadium` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `team_ibfk_2` FOREIGN KEY (`ManagerID`) REFERENCES `manager` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `team_ibfk_1` FOREIGN KEY (`StadiumID`) REFERENCES `stadium` (`ID`) ON UPDATE CASCADE,
+  CONSTRAINT `team_ibfk_2` FOREIGN KEY (`ManagerID`) REFERENCES `manager` (`ID`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
