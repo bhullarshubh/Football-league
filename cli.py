@@ -10,9 +10,11 @@ def printrecords(records):
     Take a list of matched records from a query, each of which is a dictionary,
     and print them out nicely.
     """
+    print('---')
     for record in records:
         for key in record:
             print(key + ": " + str(record[key]))
+        print('---')
 
 def inputvalues(params_types: dict):
     """
@@ -64,12 +66,12 @@ def insertTeam():
 
     try:
         # Check if not already mapped to some other team
-        query = f"SELECT * FROM Team WHERE StadiumID = {inputdict['StadiumID']};"
+        query = f"SELECT * FROM team WHERE StadiumID = {inputdict['StadiumID']};"
         if cur.execute(query):
             print("Stadium already mapped to some other team")
             return
 
-        query = f"SELECT * FROM Team WHERE ManagerID = {inputdict['ManagerID']};"
+        query = f"SELECT * FROM team WHERE ManagerID = {inputdict['ManagerID']};"
         if cur.execute(query):
             print("Manager already mapped to some other team")
             return
@@ -139,6 +141,60 @@ def getPlayer():
         print(f"Error: {e}")
         return
 
+def searchPlayer():
+    print("Please enter the search parameters. Any parameters not entered will not be considered in the search.")
+
+    name = input("Name: ")
+    nationality = input("Nationality: ")
+    team = input("Team Name: ")
+
+    query = "SELECT * from player LEFT join team on player.TeamID=team.ID"
+
+    if any([name, nationality, team]):
+        query += " WHERE "
+
+        # Start with clauses empty by default, fill them if specified
+        nameclause, nationalityclause, teamclause = "", "", ""
+
+        if name:
+            teamclause += f"CONCAT(FirstName,MiddleName,LastName) LIKE '%{name}%'"
+        if nationality:
+            nationalityclause += f"Nationality LIKE '%{nationality}%'"
+        if team:
+            teamclause += f"Name LIKE '%{team}%'"
+
+        # Remove empty clauses if any
+        conditions = list(filter(lambda x: x,[nameclause, nationalityclause, teamclause]))
+
+        # Join non empty clauses into a single conditional
+        query += " AND ".join(conditions)
+
+        # TODO: remove debug print
+        # print(f"CONSTRUCTED QUERY: {query}")
+
+        try:
+            if cur.execute(query):
+                printrecords(cur.fetchall())
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+    else:
+        print("You must enter at least one of the search parameters!")
+
+
+def searchTeam():
+    name = input("Name: ")
+
+    query = f"SELECT * FROM team WHERE Name LIKE '%{name}%'"
+
+    try:
+        if cur.execute(query):
+            printrecords(cur.fetchall())
+
+    except Exception as e:
+        print(f"Error: {e}")
+
 def quit():
     exit()
 
@@ -179,6 +235,7 @@ while(1):
                 choices = [
                     'quit',
                     'insertStadium',
+                    'searchPlayer',
                     'getPlayer',
                     'insertTeam',
                     'removeTeam'
