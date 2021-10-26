@@ -4,7 +4,6 @@ from getpass import getpass
 from shlex import quote
 import pymysql
 import pymysql.cursors
-import subprocess as sp
 
 def printrecords(records):
     """
@@ -22,33 +21,100 @@ def inputvalues(params_types: dict):
     params = {}
     for var in params_types:
         val = input(f'Please enter {var} ({params_types[var]}): ')
-        params[var] = val
+        # Handle NULL input
+        if val == '':
+            params[var] = pymysql.NULL
+        else:
+            params[var] = val
     return params
 
-def insertintotable(params: dict, table):
+def insertintotable(params: dict, vals, table):
     """
-    Given the list of params to insert and the table to insert into,
+    Given the list of params with values vals to insert, and the table to insert into,
     construct the required SQL query and execute it.
     """
     fields = list(params.keys())
     types = list(params.values())
-    vals = list(inputvalues(params).values())
 
     for id, type in enumerate(types):
-        if type == 'string':
+        if type == 'string' and vals[id] is not pymysql.NULL:
             vals[id] = "'" + quote(vals[id]) + "'"
 
-    query = f"INSERT INTO {table} ({', '.join(fields)}) VALUES ({', ' .join(vals)});"
+    try:
+        query = f"INSERT INTO {table} ({', '.join(fields)}) VALUES ({', ' .join(vals)});"
 
-    # TODO: Remove debug print()
-    print("CONSTRUCTED QUERY: " + query)
+        # TODO: Remove debug print()
+        print("CONSTRUCTED QUERY: " + query)
 
-    cur.execute(query)
-    con.commit()
+        cur.execute(query)
+        con.commit()
+    except Exception as e:
+        con.rollback()
+        print(f"Error: {e}")
+
+def insertTeam():
+    params = {
+        'Name': 'string',
+        'Country': 'string',
+        'StadiumID': 'int',
+        'ManagerID': 'int'
+    }
+
+    inputdict = inputvalues(params)
+
+    try:
+        # Check if not already mapped to some other team
+        query = f"SELECT * FROM Team WHERE StadiumID = {inputdict['StadiumID']};"
+        if cur.execute(query):
+            print("Stadium already mapped to some other team")
+            return
+
+        query = f"SELECT * FROM Team WHERE ManagerID = {inputdict['ManagerID']};"
+        if cur.execute(query):
+            print("Manager already mapped to some other team")
+            return
+
+        # Get players (not assigned to any team)
+        cur.execute(f"SELECT ID FROM Player WHERE TeamID IS NULL;")
+        players = cur.fetchall()
+
+        if len(players) < 11:
+            print("Not enough players to make a new team")
+            return
+
+        # insert team
+        insertintotable(params, list(inputdict.values()), 'team')
+        teamid = cur.lastrowid # get teamid of the just inserted team
+        
+        # Assign eleven players to this team
+        for i in range(11):
+            cur.execute(f"UPDATE Player SET TeamID = {teamid}, PlayingEleven = 1 WHERE ID = {players[i]['ID']}")
+        
+        con.commit()
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
+def removeTeam():
+    id = input('Please enter Team ID: ')
+
+    try:
+        # Player TeamID set null on delete by our referential constraints 
+        ret = cur.execute(f"DELETE FROM Team WHERE ID = {id}")
+        con.commit()
+        
+        if ret:
+            print("Team removed successfully")
+        else:
+            print("No Team found with that ID")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return
 
 def insertStadium():
     params = {
-        'ID': 'int',
         'Name': 'string',
         'Address': 'string',
         'City': 'string',
@@ -56,20 +122,25 @@ def insertStadium():
         'Capacity': 'int'
     }
 
-    insertintotable(params, 'stadium')
+    insertintotable(params, list(inputvalues(params).values()), 'stadium')
 
 def getPlayer():
     id = input('Please enter Player ID: ')
-    query = f"SELECT * FROM player WHERE ID = {id}"
+    try:
+        query = f"SELECT * FROM player WHERE ID = {id}"
 
-    ret = cur.execute(query)
-    if ret:
-        printrecords(cur.fetchall())
-    else:
-        print("No player found with that ID.")
+        ret = cur.execute(query)
+        if ret:
+            printrecords(cur.fetchall())
+        else:
+            print("No player found with that ID.")
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        return
 
 def quit():
-    exit
+    exit()
 
 # Global - Main loop
 while(1):
@@ -108,7 +179,9 @@ while(1):
                 choices = [
                     'quit',
                     'insertStadium',
-                    'getPlayer'
+                    'getPlayer',
+                    'insertTeam',
+                    'removeTeam'
                 ]
 
                 for id, choice in enumerate(choices):
