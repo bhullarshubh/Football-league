@@ -233,7 +233,7 @@ CREATE TABLE `stadium` (
   `Capacity` int NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `Address` (`Address`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -242,7 +242,7 @@ CREATE TABLE `stadium` (
 
 LOCK TABLES `stadium` WRITE;
 /*!40000 ALTER TABLE `stadium` DISABLE KEYS */;
-INSERT INTO `stadium` VALUES (1,'Camp Nou Stadium','La Ternitat','Barcelona','Spain',99354),(2,'Japan National Stadium','Kasumigaoka','Tokyo','Japan',80000);
+INSERT INTO `stadium` VALUES (1,'Camp Nou Stadium','La Ternitat','Barcelona','Spain',99354),(2,'Japan National Stadium','Kasumigaoka','Tokyo','Japan',80000),(3, 'Rotterdam International Stadium', 'Delfshaven', 'Rotterdam', 'Austria', 40000);
 /*!40000 ALTER TABLE `stadium` ENABLE KEYS */;
 UNLOCK TABLES;
 
