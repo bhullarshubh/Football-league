@@ -64,18 +64,18 @@ def insertTeam():
 
     try:
         # Check if not already mapped to some other team
-        query = f"SELECT * FROM Team WHERE StadiumID = {inputdict['StadiumID']};"
+        query = f"SELECT * FROM team WHERE StadiumID = {inputdict['StadiumID']};"
         if cur.execute(query):
             print("Stadium already mapped to some other team")
             return
 
-        query = f"SELECT * FROM Team WHERE ManagerID = {inputdict['ManagerID']};"
+        query = f"SELECT * FROM team WHERE ManagerID = {inputdict['ManagerID']};"
         if cur.execute(query):
             print("Manager already mapped to some other team")
             return
 
         # Get players (not assigned to any team)
-        cur.execute(f"SELECT ID FROM Player WHERE TeamID IS NULL;")
+        cur.execute(f"SELECT ID FROM player WHERE TeamID IS NULL;")
         players = cur.fetchall()
 
         if len(players) < 11:
@@ -88,7 +88,7 @@ def insertTeam():
         
         # Assign eleven players to this team
         for i in range(11):
-            cur.execute(f"UPDATE Player SET TeamID = {teamid}, PlayingEleven = 1 WHERE ID = {players[i]['ID']}")
+            cur.execute(f"UPDATE player SET TeamID = {teamid}, PlayingEleven = 1 WHERE ID = {players[i]['ID']}")
         
         con.commit()
 
@@ -101,7 +101,7 @@ def removeTeam():
 
     try:
         # Player TeamID set null on delete by our referential constraints 
-        ret = cur.execute(f"DELETE FROM Team WHERE ID = {id}")
+        ret = cur.execute(f"DELETE FROM team WHERE ID = {id}")
         con.commit()
         
         if ret:
@@ -139,7 +139,7 @@ def removeManager():
     
     id = input('Please enter Manager ID: ')
     try:
-        ret = cur.execute(f"DELETE FROM Manager WHERE ID = {id}")
+        ret = cur.execute(f"DELETE FROM manager WHERE ID = {id}")
         con.commit()
         
         if ret:
@@ -150,14 +150,14 @@ def removeManager():
     except pymysql.Error as e:
         # manager mapped to some team
         # remove this manager only if we can allot another manager to the team
-        cur.execute(f"SELECT ID FROM Manager WHERE ID NOT IN (SELECT managerid FROM team);")
+        cur.execute(f"SELECT ID FROM manager WHERE ID NOT IN (SELECT ManagerID FROM team);")
         managers = cur.fetchall()
         if len(managers) == 0:
             print("Manager mapped to a team; No free managers exist")
         else:
             try:
-                cur.execute(f"UPDATE Team SET Managerid ={managers[0]['ID']} WHERE managerid = {id}")
-                cur.execute(f"DELETE FROM Manager WHERE ID = {id}")
+                cur.execute(f"UPDATE team SET ManagerID ={managers[0]['ID']} WHERE ManagerID = {id}")
+                cur.execute(f"DELETE FROM manager WHERE ID = {id}")
                 con.commit()
                 print("Manager removed successfully")
             except Exception as e:
