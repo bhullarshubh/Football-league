@@ -10,9 +10,11 @@ def printrecords(records):
     Take a list of matched records from a query, each of which is a dictionary,
     and print them out nicely.
     """
+    print('---')
     for record in records:
         for key in record:
             print(key + ": " + str(record[key]))
+        print('---')
 
 def inputvalues(params_types: dict):
     """
@@ -260,6 +262,18 @@ def getPlayingEleven():
         print(f"Error: {e}")
         return
 
+def searchTeam():
+    name = input("Name: ")
+
+    query = f"SELECT * FROM team WHERE Name LIKE '%{name}%'"
+
+    try:
+        if cur.execute(query):
+            printrecords(cur.fetchall())
+
+    except Exception as e:
+        print(f"Error: {e}")
+
 def quit():
     exit()
 
@@ -418,6 +432,7 @@ while(1):
                     'updateJerseyName',
                     'updateJerseyNumber',
                     'updateCapacity',
+                    'searchTeam'
                 ]
 
                 for id, choice in enumerate(choices):
