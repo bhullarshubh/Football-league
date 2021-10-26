@@ -181,6 +181,52 @@ def getPlayer():
         print(f"Error: {e}")
         return
 
+def getGoalscorers():
+    try:
+        query = """
+        SELECT a.ID, CONCAT(FirstName, ' ', 
+        (CASE
+        WHEN MiddleName IS NULL THEN ''
+        ELSE CONCAT(MiddleName, ' ')
+        END),  LastName) 
+        as PlayerName FROM (select distinct(PlayerID) as ID from goal) a, player b where a.ID = b.ID
+        """
+
+        ret = cur.execute(query)
+        if ret:
+            printrecords(cur.fetchall())
+        else:
+            print("No Goal Scorers")
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
+def getAvgGoalsScored():
+    try:
+        query = "select sum(HomeScore + AwayScore)/count(MatchID) as AvgGoalsScored from result"
+        cur.execute(query)
+        printrecords(cur.fetchall())
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
+def getPlayingEleven():
+    id = input('Please enter Team ID: ')
+
+    try:
+        ret = cur.execute(f"SELECT * FROM player WHERE TeamID = {id} AND PlayingEleven = 1")
+        
+        if ret:
+            printrecords(cur.fetchall())
+        else:
+            print("No Team found with that ID")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
 def quit():
     exit()
 
@@ -226,6 +272,10 @@ while(1):
                     'removeTeam',
                     'insertManager', 
                     'removeManager',  
+                    'getGoalscorers',
+                    'getAvgGoalsScored',
+                    'getPlayingEleven',
+                    
                 ]
 
                 for id, choice in enumerate(choices):

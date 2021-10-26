@@ -2,7 +2,7 @@ CREATE DATABASE  IF NOT EXISTS `game` /*!40100 DEFAULT CHARACTER SET utf8mb4 COL
 USE `game`;
 -- MySQL dump 10.13  Distrib 8.0.26, for Win64 (x86_64)
 --
--- Host: localhost    Database: game
+-- Host: localhost    Database: cray
 -- ------------------------------------------------------
 -- Server version	8.0.26
 
@@ -41,6 +41,7 @@ CREATE TABLE `goal` (
 
 LOCK TABLES `goal` WRITE;
 /*!40000 ALTER TABLE `goal` DISABLE KEYS */;
+INSERT INTO `goal` VALUES (1,1,'2021-05-01 14:07:12'),(2,3,'2021-05-09 18:02:53'),(2,4,'2021-05-09 18:16:45'),(1,7,'2021-05-01 14:20:01'),(2,9,'2021-05-09 18:05:07');
 /*!40000 ALTER TABLE `goal` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -65,6 +66,7 @@ CREATE TABLE `jerseycolor` (
 
 LOCK TABLES `jerseycolor` WRITE;
 /*!40000 ALTER TABLE `jerseycolor` DISABLE KEYS */;
+INSERT INTO `jerseycolor` VALUES (1,'Green'),(1,'Pink'),(2,'Blue');
 /*!40000 ALTER TABLE `jerseycolor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -117,7 +119,7 @@ CREATE TABLE `match` (
   CONSTRAINT `match_ibfk_1` FOREIGN KEY (`HomeTeamID`) REFERENCES `team` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `match_ibfk_2` FOREIGN KEY (`AwayTeamID`) REFERENCES `team` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `match_ibfk_3` FOREIGN KEY (`Venue`) REFERENCES `stadium` (`ID`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,6 +128,7 @@ CREATE TABLE `match` (
 
 LOCK TABLES `match` WRITE;
 /*!40000 ALTER TABLE `match` DISABLE KEYS */;
+INSERT INTO `match` VALUES (1,1,2,'2021-05-01','2021-05-01 14:00:00',1),(2,2,1,'2021-05-09','2021-05-09 18:00:00',2);
 /*!40000 ALTER TABLE `match` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,7 +162,7 @@ CREATE TABLE `player` (
 
 LOCK TABLES `player` WRITE;
 /*!40000 ALTER TABLE `player` DISABLE KEYS */;
-INSERT INTO `player` VALUES (1,'Aloy',NULL,'Ihenacho','1995-07-21','Nigeria',NULL,0,'Ihenacho',24),(2,'Thomas','Eric','Blomeyer','1996-04-24','Germany',NULL,0,'Blomeyer',56),(3,'Milan','Husek','Ivana','1983-11-26','Slovakia',NULL,0,'Ivana',111),(4,'Attaberk','Sam','Gurgen','1996-09-30','Turkey',NULL,0,'Guergen',54),(5,'Konstantin','Chase','Engel','1988-07-27','Kazakhstan',NULL,0,'Engel',29),(6,'Ivan',NULL,'Komlev','1994-07-22','Ukraine',NULL,0,'Komlev',97),(7,'Dmytro',NULL,'Yusov','1993-05-11','Ukraine',NULL,0,'Yusov',41),(8,'Bas',NULL,'Sibum','1982-12-26','Netherlands',NULL,0,'Sibum',55),(9,'Livio',NULL,'Nabab','1988-06-14','Guadeloupe',NULL,0,'Nabab',49),(10,'Vitaliy',NULL,'Lysytskyi','1982-04-16','Ukraine',NULL,0,'Lysytskyi',87),(11,'Rick',NULL,'Hemmink','1993-02-14','Netherlands',NULL,0,'Hemmink',222),(12,'Haris',NULL,'Handzic','1990-06-20','Bosnia-Herzegovina',NULL,0,'Handzic',300),(13,'Semen',NULL,'Fomin','1989-01-10','Russia',NULL,0,'Fomin',592),(14,'Mahmut',NULL,'Metin','1994-07-12','Turkey',NULL,0,'Metin',675),(15,'Servet',NULL,'Cetin','1981-03-17','Turkey',NULL,0,'Cetin',812),(16,'Mehmet','Ali','Kacar','1998-01-18','Turkey',NULL,0,'Kacar',99),(17,'Oktay',NULL,'Delibalta','1985-10-27','Turkey',NULL,0,'Delibalta',12),(18,'Hilmi',NULL,'Resiti','1997-07-29','Turkey',NULL,0,'Resiti',65),(19,'Mehmet','Enes','Sigirci','1993-02-24','Turkey',NULL,0,'Sigirci',52),(20,'Marko',NULL,'Futacs','1990-02-22','Hungary',NULL,0,'Futacs',76),(21,'Rahmi',NULL,'Celik','1995-08-11','Turkey',NULL,0,'Celik',39),(22,'Selcuk',NULL,'Alibaz','1989-01-03','Germany',NULL,0,'Alibaz',66),(23,'Ciprian',NULL,'Marica','1985-01-02','Romania',NULL,0,'Marica',5),(24,'Dossa',NULL,'Junior','1986-07-28','Cyprus',NULL,0,'Junior',1),(25,'Dmitri',NULL,'Verkhovtsov','1986-10-10','Belarus',NULL,0,'Verkhovtsov',2),(26,'Evgeniy',NULL,'Osipov','1986-10-29','Russia',NULL,0,'Osipov',7),(27,'Christian',NULL,'Nade','1984-09-18','France',NULL,0,'Nade',67);
+INSERT INTO `player` VALUES (1,'Aloy',NULL,'Ihenacho','1995-07-21','Nigeria',1,1,'Ihenacho',24),(2,'Thomas','Eric','Blomeyer','1996-04-24','Germany',1,1,'Blomeyer',56),(3,'Milan','Husek','Ivana','1983-11-26','Slovakia',1,1,'Ivana',111),(4,'Attaberk','Sam','Gurgen','1996-09-30','Turkey',1,1,'Guergen',54),(5,'Konstantin','Chase','Engel','1988-07-27','Kazakhstan',1,1,'Engel',29),(6,'Ivan',NULL,'Komlev','1994-07-22','Ukraine',2,2,'Komlev',97),(7,'Dmytro',NULL,'Yusov','1993-05-11','Ukraine',2,2,'Yusov',41),(8,'Bas',NULL,'Sibum','1982-12-26','Netherlands',2,2,'Sibum',55),(9,'Livio',NULL,'Nabab','1988-06-14','Guadeloupe',2,2,'Nabab',49),(10,'Vitaliy',NULL,'Lysytskyi','1982-04-16','Ukraine',2,2,'Lysytskyi',87),(11,'Rick',NULL,'Hemmink','1993-02-14','Netherlands',2,0,'Hemmink',222),(12,'Haris',NULL,'Handzic','1990-06-20','Bosnia-Herzegovina',NULL,0,'Handzic',300),(13,'Semen',NULL,'Fomin','1989-01-10','Russia',NULL,0,'Fomin',592),(14,'Mahmut',NULL,'Metin','1994-07-12','Turkey',NULL,0,'Metin',675),(15,'Servet',NULL,'Cetin','1981-03-17','Turkey',NULL,0,'Cetin',812),(16,'Mehmet','Ali','Kacar','1998-01-18','Turkey',NULL,0,'Kacar',99),(17,'Oktay',NULL,'Delibalta','1985-10-27','Turkey',NULL,0,'Delibalta',12),(18,'Hilmi',NULL,'Resiti','1997-07-29','Turkey',NULL,0,'Resiti',65),(19,'Mehmet','Enes','Sigirci','1993-02-24','Turkey',NULL,0,'Sigirci',52),(20,'Marko',NULL,'Futacs','1990-02-22','Hungary',NULL,0,'Futacs',76),(21,'Rahmi',NULL,'Celik','1995-08-11','Turkey',NULL,0,'Celik',39),(22,'Selcuk',NULL,'Alibaz','1989-01-03','Germany',NULL,0,'Alibaz',66),(23,'Ciprian',NULL,'Marica','1985-01-02','Romania',NULL,0,'Marica',5),(24,'Dossa',NULL,'Junior','1986-07-28','Cyprus',NULL,0,'Junior',1),(25,'Dmitri',NULL,'Verkhovtsov','1986-10-10','Belarus',NULL,0,'Verkhovtsov',2),(26,'Evgeniy',NULL,'Osipov','1986-10-29','Russia',NULL,0,'Osipov',7),(27,'Christian',NULL,'Nade','1984-09-18','France',NULL,0,'Nade',67);
 /*!40000 ALTER TABLE `player` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -210,6 +213,7 @@ CREATE TABLE `result` (
 
 LOCK TABLES `result` WRITE;
 /*!40000 ALTER TABLE `result` DISABLE KEYS */;
+INSERT INTO `result` VALUES (1,1,1),(2,2,1);
 /*!40000 ALTER TABLE `result` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -260,7 +264,7 @@ CREATE TABLE `team` (
   KEY `ManagerID` (`ManagerID`),
   CONSTRAINT `team_ibfk_1` FOREIGN KEY (`StadiumID`) REFERENCES `stadium` (`ID`) ON UPDATE CASCADE,
   CONSTRAINT `team_ibfk_2` FOREIGN KEY (`ManagerID`) REFERENCES `manager` (`ID`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,6 +273,7 @@ CREATE TABLE `team` (
 
 LOCK TABLES `team` WRITE;
 /*!40000 ALTER TABLE `team` DISABLE KEYS */;
+INSERT INTO `team` VALUES (1,'Panthers','Italy',1,1),(2,'Giants','France',2,2);
 /*!40000 ALTER TABLE `team` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -281,4 +286,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-10-24 17:02:14
+-- Dump completed on 2021-10-26 19:11:20
